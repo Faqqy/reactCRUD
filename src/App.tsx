@@ -4,37 +4,56 @@ import '../src/index.css';
 
 export default function App () {
 
-  const [notess, setNotes] = useState(null);
+  let [notess, setNotes] = useState({});
 
-  let obj = 
+  notess = 
     {
       "id": 0,
       "content": "То, что было введено в поле ввода"
     }
 
-  useEffect(() => {
+  const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    fetch('http://localhost:7070/notes', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(notess),
+    })
+    .then(response => response.status)
+    .catch((error) => console.log(error));
+    console.log(notess);
+  }
+
+  const pullGet = () => {
     fetch('http://localhost:7070/notes')
     .then(response => response.json())
     .then((data) => {
       setNotes(data);
     })
     .catch((error) => console.log(error))
-  }, [])
+  }
 
   useEffect(() => {
-    fetch('http://localhost:7070/notes', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(obj),
-    })
-    .then(response => response.status)
-    .catch((error) => console.log(error));
+    {handleChange}
   }, []);
+
+  useEffect(() => {
+    {pullGet}
+  }, [handleChange])
+
+
 
 
   return (
     <>
-      {obj.content}
+      <form onSubmit={handleChange}>
+        <input type="text" />
+        <button type="submit">Получить</button>
+      </form>
+      <div className="obj">
+       
+        </div>
     </>
 
   )
